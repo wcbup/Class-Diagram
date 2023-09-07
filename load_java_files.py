@@ -9,6 +9,7 @@ def load_java_files(project_name: str) -> list[Tuple[str, str]]:
     return a list of tuples of file name and content
     """
     file_paths: List[str] = []
+    # find all java files in the project
     for file_path in glob.glob("./" + project_name + "/**/*.java", recursive=True):
         file_paths.append(file_path)
 
@@ -24,15 +25,16 @@ def load_java_files(project_name: str) -> list[Tuple[str, str]]:
         file_name = file_name[slash_loc + 1 :]
         return file_name
 
-    name_content_list: List[str] = []
+    # the list containing tuples of name and content
+    name_content_list: List[Tuple[str, str]] = []
     for file_path in file_paths:
         with open(file_path, "r") as file:
             name_content_list.append((get_name(file_path), file.read()))
     
-    for name, content in name_content_list:
-        print(name)
-        print(content)
-        print("----------")
+    # for name, content in name_content_list:
+    #     print(name)
+    #     print(content)
+    #     print("----------")
 
     return name_content_list
 
