@@ -1,13 +1,27 @@
 digraph SourceGra {
-x0 [label = "dtu.compute.simple.Example";
-]x1 [label = "dtu.compute.util.Utils";
-]x2 [label = "java.lang.String";
-]x3 [label = "dtu.compute.simple.Other";
-]x4 [label = "java.lang.System";
+x0 [label = "dtu.deps.normal.Primes";
+]x1 [label = "java.util.ArrayList";
+]x2 [label = "java.util.Iterator";
+]x3 [label = "java.util.List";
+]x4 [label = "java.lang.Integer";
+]x5 [label = "java.lang.String";
+]x6 [label = "java.lang.System";
+]x7 [label = "dtu.deps.simple.Example";
+]x8 [label = "dtu.deps.util.Utils";
+]x9 [label = "dtu.deps.simple.Other";
+]x10 [label = "dtu.deps.tricky.Tricky";
 ]x0 -> x1;
 x0 -> x2;
 x0 -> x3;
-x3 -> x2;
-x3 -> x1;
-x1 -> x4;
+x0 -> x4;
+x0 -> x5;
+x0 -> x6;
+x7 -> x8;
+x7 -> x5;
+x7 -> x9;
+x9 -> x5;
+x9 -> x8;
+x10 -> x7;
+x10 -> x9;
+x8 -> x6;
 }

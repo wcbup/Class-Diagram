@@ -4,17 +4,6 @@ import os
 from typing import List, Dict
 
 
-def modify_path(path, num_elements_to_remove, file_extension):
-    # Split the path into parts
-    parts = path.split(os.path.sep)
-
-    # Remove the specified number of elements from the beginning
-    remaining_parts = parts[num_elements_to_remove:]
-
-    # Remove file extension and join parts with dots
-    modified_path = ".".join(remaining_parts).replace(file_extension, "").replace(os.path.sep, ".")
-
-    return modified_path
 # the class represent a java file
 class JavaFile:
     def __init__(self) -> None:
@@ -38,10 +27,13 @@ class JavaFile:
         str_list = tmp_file.readlines()
         for line in str_list:
             self.total_str += line  # add each line to 'total_str'
-        self.file_name = modify_path(file_path,4,".java")
+        # get the file name from self.file_name
+        dot_location = file_path.rfind(".")
+        self.file_name = file_path[:dot_location]
+        dot_location = self.file_name.rfind("\\")
+        self.file_name = self.file_name[dot_location + 1:]
         # print(self.file_name)
         tmp_file.close()
-        return self.file_name
     
     def remove_regex(self, reg_pattern: str) -> None:
         """
@@ -89,10 +81,7 @@ class JavaFile:
         get the package_name and id of the java file
         """
         self.get_package_name()
-        # get the file name from self.file_name
-        dot_location = self.file_name.rfind(".")
-        file_name = self.file_name[dot_location + 1:]
-        self.id = self.package_name + "." + file_name
+        self.id = self.package_name + "." + self.file_name
         # print(self.id)
     
     def get_own_class_list(self) -> None:
@@ -316,7 +305,7 @@ class Painter:
 if __name__ == "__main__":
     import glob
 
-    root_directory_path = "example-dependency-graphs"
+    root_directory_path = "course-02242-examples"
     file_paths = []
     # find all the files ending with '.java'
     for file_path in glob.glob("./" + root_directory_path + "/**/*.java", recursive=True):
@@ -326,7 +315,7 @@ if __name__ == "__main__":
 
     for file_path in file_paths:
         tmp_java_file = JavaFile()
-        filename = tmp_java_file.load_file(file_path)
+        tmp_java_file.load_file(file_path)
         # tmp_java_file.remove_comment()
         # tmp_java_file.remove_string()
         # # tmp_java_file.get_package_name()
@@ -339,8 +328,6 @@ if __name__ == "__main__":
 
         # print(root_directory_path, file_path)
         # print(tmp_java_file.total_str) # print the text in the file
-        with open(filename + ".txt", "w") as f:
-            f.write(tmp_java_file.total_str)
     
     # add dependency
     for java_file in java_file_list:
