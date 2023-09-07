@@ -62,22 +62,24 @@ class JavaAnalyzer:
                     #     print(" ", child_node.type)
 
                 case "import_declaration":
-                    # for child_node in node.named_children:
-                    #     print(
-                    #         " ",
-                    #         node.named_child_count,
-                    #         child_node.type,
-                    #         child_node.text.decode(),
-                    #     )
+                    for child_node in node.named_children:
+                        print(
+                            " ",
+                            node.named_child_count,
+                            child_node.type,
+                            child_node.text.decode(),
+                        )
+                    # scoped_identifier
+                    scoped_id_node = node.named_children[0]
+                    if scoped_id_node.type != "scoped_identifier":
+                        raise Exception("import_declaration")
 
                     match node.named_child_count:
                         case 1:
-                            self.import_file_list.append(
-                                node.named_children[0].text.decode()
-                            )
+                            self.import_file_list.append(scoped_id_node.text.decode())
                         case 2:
                             self.import_package_list.append(
-                                node.named_children[0].text.decode()
+                                scoped_id_node.text.decode()
                             )
                         case _:
                             raise Exception(
@@ -102,12 +104,10 @@ class JavaAnalyzer:
                     for child_node in node.named_children:
                         # print(" ", child_node.type, child_node.text.decode())
                         analyze_node(child_node)
-                
+
                 # case "class_body":
                 #     for child_node in node.named_children:
                 #         print(" ", child_node.type, child_node.text.decode())
-
-                    
 
         for node in self.root_node.named_children:
             print(node.type)
