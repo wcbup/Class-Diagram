@@ -12,7 +12,14 @@ def load_java_files(project_name: str) -> list[str]:
         file_paths.append(file_path)
 
     # print(file_paths)
-    return file_paths
+
+    content_list: List[str] = []
+    for file_path in file_paths:
+        with open(file_path, "r") as file:
+            content_list.append(file.read())
+
+    return content_list
+
 
 # test code
 if __name__ == "__main__":
