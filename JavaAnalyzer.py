@@ -80,9 +80,6 @@ class JavaAnalyzer:
                             )
 
                 case "class_declaration":
-                    for child_node in node.named_children:
-                        print(" ", child_node.type, child_node.text.decode())
-
                     # the node of the identifier
                     id_node = node.named_children[1]
                     if id_node.type != "identifier":
@@ -96,6 +93,16 @@ class JavaAnalyzer:
                                 "unhandled situation in class_declaration!",
                                 node.named_children[0].text,
                             )
+
+                    for child_node in node.named_children:
+                        # print(" ", child_node.type, child_node.text.decode())
+                        analyze_node(child_node)
+                
+                case "class_body":
+                    for child_node in node.named_children:
+                        print(" ", child_node.type, child_node.text.decode())
+
+                    
 
         for node in self.root_node.named_children:
             print(node.type)
