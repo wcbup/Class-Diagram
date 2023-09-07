@@ -19,6 +19,7 @@ class JavaAnalyzer:
         self.import_package_list: List[
             str
         ] = []  # the list of names of the packages it imports
+        self.public_class_list: List[str] = []  # the list of public classes it creates
 
         # load the tree sitter
         tree_sitter.Language.build_library(
@@ -54,6 +55,7 @@ class JavaAnalyzer:
                     # print(self.package_name)
                     # for child_node in node.named_children:
                     #     print(" ", child_node.type)
+
                 case "import_declaration":
                     # for child_node in node.named_children:
                     #     print(
@@ -73,8 +75,25 @@ class JavaAnalyzer:
                                 node.named_children[0].text.decode()
                             )
                         case _:
-                            raise Exception("unhandled situation in import_declaration!")
-                    
+                            raise Exception(
+                                "unhandled situation in import_declaration!"
+                            )
+
+                case "class_declaration":
+                    for child_node in node.named_children:
+                        print(" ", child_node.type, child_node.text.decode())
+
+                    # the node of the identifier
+                    id_node = node.named_children[1]
+                    if id_node.type != "identifier":
+                        raise Exception("unhandled situation in class_declaration!")
+
+                    match node.named_children[0].type:
+                        case "public":
+                            self.public_class_list.append(id_node.text)
+                        case _:
+                            raise Exception("unhandled situation in class_declaration!")
+
 
         for node in self.root_node.named_children:
             print(node.type)
