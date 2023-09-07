@@ -88,12 +88,14 @@ class JavaAnalyzer:
                     if id_node.type != "identifier":
                         raise Exception("unhandled situation in class_declaration!")
 
-                    match node.named_children[0].type:
+                    match node.named_children[0].text.decode():
                         case "public":
-                            self.public_class_list.append(id_node.text)
+                            self.public_class_list.append(id_node.text.decode())
                         case _:
-                            raise Exception("unhandled situation in class_declaration!")
-
+                            raise Exception(
+                                "unhandled situation in class_declaration!",
+                                node.named_children[0].text,
+                            )
 
         for node in self.root_node.named_children:
             print(node.type)
@@ -112,3 +114,4 @@ if __name__ == "__main__":
     test_java_analyzer.analyze()
     print(test_java_analyzer.import_file_list)
     print(test_java_analyzer.import_package_list)
+    print(test_java_analyzer.public_class_list)
