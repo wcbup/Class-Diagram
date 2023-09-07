@@ -1,0 +1,20 @@
+package dtu.compute.simple;
+
+import dtu.compute.util.Utils;
+
+
+
+
+
+
+
+
+
+public class Example {
+    Other other = new Other();
+
+    public static void main(String[] args) {
+        Utils.printHello();
+    }
+
+}
