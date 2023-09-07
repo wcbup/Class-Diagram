@@ -50,7 +50,12 @@ class JavaAnalyzer:
             """
             match node.type:
                 case "package_declaration":
-                    self.package_name = node.named_children[0].text.decode()
+                    # scoped_identifier
+                    scoped_id_node = node.named_children[0]
+                    if scoped_id_node.type != "scoped_identifier":
+                        raise Exception("unhandled situation in package_declaration")
+
+                    self.package_name = scoped_id_node.text
 
                     # print(self.package_name)
                     # for child_node in node.named_children:
@@ -98,9 +103,9 @@ class JavaAnalyzer:
                         # print(" ", child_node.type, child_node.text.decode())
                         analyze_node(child_node)
                 
-                case "class_body":
-                    for child_node in node.named_children:
-                        print(" ", child_node.type, child_node.text.decode())
+                # case "class_body":
+                #     for child_node in node.named_children:
+                #         print(" ", child_node.type, child_node.text.decode())
 
                     
 
