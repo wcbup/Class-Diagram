@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List
+from typing import List, Set
 from load_java_files import load_java_files
 import tree_sitter
 
@@ -13,14 +13,14 @@ class JavaAnalyzer:
         self.name = name  # the name of the java file
         self.content = content  # the content of the java file
         self.package_name = ""  # the name of package it belongs to
-        self.import_file_list: List[
+        self.import_file_set: Set[
             str
-        ] = []  # the list of names of the files it imports
-        self.import_package_list: List[
+        ] = set()  # the set of names of the files it imports
+        self.import_package_set: Set[
             str
-        ] = []  # the list of names of the packages it imports
-        self.public_class_list: List[str] = []  # the list of public classes it creates
-        self.use_class_list: List[str] = [] # the list of the classes it uses
+        ] = set()  # the set of names of the packages it imports
+        self.public_class_set: Set[str] = set()  # the set of public classes it creates
+        self.use_class_set: Set[str] = set()  # the set of the classes it uses
 
         # load the tree sitter
         tree_sitter.Language.build_library(
@@ -78,9 +78,9 @@ class JavaAnalyzer:
 
                     match node.named_child_count:
                         case 1:
-                            self.import_file_list.append(scoped_id_node.text.decode())
+                            self.import_file_set.add(scoped_id_node.text.decode())
                         case 2:
-                            self.import_package_list.append(
+                            self.import_package_set.add(
                                 scoped_id_node.text.decode()
                             )
                         case _:
@@ -96,7 +96,7 @@ class JavaAnalyzer:
 
                     match node.named_children[0].text.decode():
                         case "public":
-                            self.public_class_list.append(id_node.text.decode())
+                            self.public_class_set.add(id_node.text.decode())
                         case _:
                             raise Exception(
                                 "unhandled situation in class_declaration!",
@@ -119,8 +119,8 @@ class JavaAnalyzer:
 
                     if type_id_node.type != "type_identifier":
                         raise Exception("unhandled situation in field_declaration")
-                    
-                    self.use_class_list.append(type_id_node.text.decode())
+
+                    self.use_class_set.add(type_id_node.text.decode())
 
         for node in self.root_node.named_children:
             print(node.type)
@@ -137,7 +137,7 @@ if __name__ == "__main__":
 
     test_java_analyzer = java_analyzer_list[0]
     test_java_analyzer.analyze()
-    print(test_java_analyzer.import_file_list)
-    print(test_java_analyzer.import_package_list)
-    print(test_java_analyzer.public_class_list)
-    print(test_java_analyzer.use_class_list)
+    print(test_java_analyzer.import_file_set)
+    print(test_java_analyzer.import_package_set)
+    print(test_java_analyzer.public_class_set)
+    print(test_java_analyzer.use_class_set)
