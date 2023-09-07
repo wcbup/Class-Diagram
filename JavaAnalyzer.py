@@ -80,9 +80,7 @@ class JavaAnalyzer:
                         case 1:
                             self.import_file_set.add(scoped_id_node.text.decode())
                         case 2:
-                            self.import_package_set.add(
-                                scoped_id_node.text.decode()
-                            )
+                            self.import_package_set.add(scoped_id_node.text.decode())
                         case _:
                             raise Exception(
                                 "unhandled situation in import_declaration!"
@@ -114,13 +112,12 @@ class JavaAnalyzer:
                         analyze_node(child_node)
 
                 case "field_declaration":
-                    # node of type_identifier
-                    type_id_node = node.named_children[0]
-
-                    if type_id_node.type != "type_identifier":
-                        raise Exception("unhandled situation in field_declaration")
-
-                    self.use_class_set.add(type_id_node.text.decode())
+                    for child_node in node.named_children:
+                        print("  ", child_node.type, child_node.text.decode())
+                        analyze_node(child_node)
+                
+                case "type_identifier":
+                    self.use_class_set.add(node.text.decode())
 
         for node in self.root_node.named_children:
             print(node.type)
