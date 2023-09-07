@@ -20,6 +20,7 @@ class JavaAnalyzer:
             str
         ] = []  # the list of names of the packages it imports
         self.public_class_list: List[str] = []  # the list of public classes it creates
+        self.use_class_list: List[str] = [] # the list of the classes it uses
 
         # load the tree sitter
         tree_sitter.Language.build_library(
@@ -62,13 +63,14 @@ class JavaAnalyzer:
                     #     print(" ", child_node.type)
 
                 case "import_declaration":
-                    for child_node in node.named_children:
-                        print(
-                            " ",
-                            node.named_child_count,
-                            child_node.type,
-                            child_node.text.decode(),
-                        )
+                    # for child_node in node.named_children:
+                    #     print(
+                    #         " ",
+                    #         node.named_child_count,
+                    #         child_node.type,
+                    #         child_node.text.decode(),
+                    #     )
+
                     # scoped_identifier
                     scoped_id_node = node.named_children[0]
                     if scoped_id_node.type != "scoped_identifier":
@@ -105,9 +107,20 @@ class JavaAnalyzer:
                         # print(" ", child_node.type, child_node.text.decode())
                         analyze_node(child_node)
 
-                # case "class_body":
-                #     for child_node in node.named_children:
-                #         print(" ", child_node.type, child_node.text.decode())
+                case "class_body":
+                    for child_node in node.named_children:
+                        # print(" ", child_node.type, child_node.text.decode())
+                        print(" ", child_node.type)
+                        analyze_node(child_node)
+
+                case "field_declaration":
+                    # node of type_identifier
+                    type_id_node = node.named_children[0]
+
+                    if type_id_node.type != "type_identifier":
+                        raise Exception("unhandled situation in field_declaration")
+                    
+                    self.use_class_list.append(type_id_node.text.decode())
 
         for node in self.root_node.named_children:
             print(node.type)
@@ -127,3 +140,4 @@ if __name__ == "__main__":
     print(test_java_analyzer.import_file_list)
     print(test_java_analyzer.import_package_list)
     print(test_java_analyzer.public_class_list)
+    print(test_java_analyzer.use_class_list)
