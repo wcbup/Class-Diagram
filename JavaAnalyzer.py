@@ -239,6 +239,19 @@ class JavaAnalyzer:
             print(" ", "aggregate name set:", java_class.aggregate_name_set)
             print(" ", "depend name set:", java_class.depend_name_set)
             print(" ", "depend field set:", java_class.depend_field_set)
+            print()
+        
+        for java_class in self.public_class_set:
+            java_class.add_lang_dependency()
+
+        for java_class in self.public_class_set:
+            print(java_class.id)
+            print(" ", "aggregate name set:", java_class.aggregate_name_set)
+            print(" ", "depend name set:", java_class.depend_name_set)
+            print(" ", "depend field set:", java_class.depend_field_set)
+            print(" ", "aggregate id set:", java_class.aggregate_id_set)
+            print(" ", "depend id set:", java_class.depend_id_set)
+            print()
 
 
 # test code
@@ -252,5 +265,5 @@ if __name__ == "__main__":
     # for java_analyzer in java_analyzer_list:
     #     java_analyzer.analyze()
 
-    test_java_analyzer = java_analyzer_list[1]
+    test_java_analyzer = java_analyzer_list[2]
     test_java_analyzer.analyze()
