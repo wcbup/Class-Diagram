@@ -99,7 +99,7 @@ class JavaAnalyzer:
 
                     self.package_name = scoped_id_node.text.decode()
                     # set up id
-                    self.id = self.package_name + self.name
+                    self.id = self.package_name + "." + self.name
 
                 case "import_declaration":
                     debug_analyze_child()
@@ -232,6 +232,7 @@ class JavaAnalyzer:
             analyze_node(node, 0, None)
 
         print()
+        print("id:", self.id)
         print("import files:", self.import_file_set)
         print("import packages:", self.import_package_set)
         print("public classes:", [i.id for i in self.public_class_set])
