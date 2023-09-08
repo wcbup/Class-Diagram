@@ -141,6 +141,9 @@ class JavaAnalyzer:
                 
                 case "modifiers":
                     print_debug_info(node.text)
+                
+                case "identifier":
+                    print_debug_info(node.text)
 
                 case "class_body":
                     debug_analyze_child()
