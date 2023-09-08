@@ -51,6 +51,9 @@ class JavaAnalyzer:
             """
             match node.type:
                 case "package_declaration":
+                    for child_node in node.named_children:
+                        print(" " * debug_level, child_node.type, child_node.text)
+
                     # scoped_identifier
                     scoped_id_node = node.named_children[0]
                     if scoped_id_node.type != "scoped_identifier":
@@ -59,17 +62,10 @@ class JavaAnalyzer:
                     self.package_name = scoped_id_node.text
 
                     # print(self.package_name)
-                    # for child_node in node.named_children:
-                    #     print(" ", child_node.type)
 
                 case "import_declaration":
-                    # for child_node in node.named_children:
-                    #     print(
-                    #         " ",
-                    #         node.named_child_count,
-                    #         child_node.type,
-                    #         child_node.text.decode(),
-                    #     )
+                    for child_node in node.named_children:
+                        print(" " * debug_level, child_node.type, child_node.text)
 
                     # scoped_identifier
                     scoped_id_node = node.named_children[0]
@@ -102,26 +98,33 @@ class JavaAnalyzer:
                             )
 
                     for child_node in node.named_children:
-                        # print(" ", child_node.type, child_node.text.decode())
+                        # print(" " * debug_level, child_node.type, child_node.text)
+                        print(" " * debug_level, child_node.type)
                         analyze_node(child_node, debug_level + 1)
 
                 case "class_body":
                     for child_node in node.named_children:
-                        # print(" ", child_node.type, child_node.text.decode())
+                        # print(" " * debug_level, child_node.type, child_node.text)
                         print(" " * debug_level, child_node.type)
                         analyze_node(child_node, debug_level + 1)
 
                 case "field_declaration":
                     for child_node in node.named_children:
-                        # print("  ", child_node.type, child_node.text.decode())
+                        # print(" " * debug_level, child_node.type, child_node.text)
+                        print(" " * debug_level, child_node.type)
                         analyze_node(child_node, debug_level + 1)
-                
+
                 case "type_identifier":
+                    print(" " * debug_level, node.text)
                     self.use_class_set.add(node.text.decode())
-                
+
+                case "variable_declarator":
+                    print(" " * debug_level, node.text)
+
                 case "method_declaration":
                     for child_node in node.named_children:
-                        print(" " * debug_level, child_node.type, child_node.text.decode())
+                        print(" " * debug_level, child_node.type, child_node.text)
+                        # analyze_node(child_node, debug_level + 1)
 
         for node in self.root_node.named_children:
             print(node.type)
