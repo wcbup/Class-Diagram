@@ -1,6 +1,7 @@
 from __future__ import annotations
 from JavaClass import JavaClass
 from typing import List, Dict, Set
+import os
 
 
 class Painter:
@@ -63,3 +64,17 @@ class Painter:
         dot_file_path = "./result.dot"
         with open(dot_file_path, "w") as f:
             f.write(self.dot_code)
+        
+    def generate_graph_and_show(self) -> None:
+        """
+        generate the graph
+        save the graph to './result.png'
+        show the graph
+        """
+
+        DPI = 500 # the dpi of the result picture
+        self.generate_dot_code()
+        command = f".\\Graphviz\\bin\\dot.exe -Tpng -Gdpi={DPI} .\\result.dot -o result.png"
+        os.system(command)
+        command = ".\\result.png"
+        os.system(command)
