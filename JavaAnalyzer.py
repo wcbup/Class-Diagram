@@ -58,20 +58,20 @@ class JavaAnalyzer:
                 for child_node in node.named_children:
                     print(" " * debug_level, child_node.type)
                     analyze_node(child_node, debug_level + 1)
-            
+
             def print_child_type_text() -> None:
                 """
                 print the types and texts of children of the node
                 """
                 for child_node in node.named_children:
                     print(" " * debug_level, child_node.type, child_node.text)
-            
+
             def print_debug_info(info: str | bytes) -> None:
                 """
                 print the debug info
                 """
                 print(" " * debug_level, info)
-            
+
             def analyze_child_node() -> None:
                 """
                 analyze all the children nodes
@@ -110,14 +110,14 @@ class JavaAnalyzer:
 
                 case "scoped_identifier":
                     print_debug_info(node.text)
-                
+
                 case "asterisk":
                     print_debug_info(node.text)
-                
+
                 case "line_comment":
                     # print_debug_info(node.text)
                     return
-                
+
                 case "block_comment":
                     # print_debug_info(node.text)
                     return
@@ -138,10 +138,10 @@ class JavaAnalyzer:
                             )
 
                     debug_analyze_child()
-                
+
                 case "modifiers":
                     print_debug_info(node.text)
-                
+
                 case "identifier":
                     print_debug_info(node.text)
 
@@ -150,17 +150,17 @@ class JavaAnalyzer:
 
                 case "field_declaration":
                     debug_analyze_child()
-                    
+
                 case "type_identifier":
                     print_debug_info(node.text)
                     self.use_class_set.add(node.text.decode())
-                
+
                 case "void_type":
                     print_debug_info(node.text)
-                
+
                 case "array_type":
                     debug_analyze_child()
-                
+
                 case "dimensions":
                     print_debug_info(node.text)
 
@@ -172,10 +172,15 @@ class JavaAnalyzer:
 
                 case "formal_parameters":
                     debug_analyze_child()
-                
+
                 case "formal_parameter":
                     debug_analyze_child()
 
+                case "block":
+                    debug_analyze_child()
+
+                case "expression_statement":
+                    print_child_type_text()
 
         for node in self.root_node.named_children:
             print(node.type)
