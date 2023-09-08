@@ -21,6 +21,7 @@ class JavaAnalyzer:
         ] = set()  # the set of names of the packages it imports
         self.public_class_set: Set[str] = set()  # the set of public classes it creates
         self.use_class_set: Set[str] = set()  # the set of the classes it uses
+        self.field_access_set: Set[str] = set() # the set of the field acceess
 
         # load the tree sitter
         tree_sitter.Language.build_library(
@@ -184,15 +185,22 @@ class JavaAnalyzer:
                     debug_analyze_child()
                 
                 case "method_invocation":
-                    # get the first identifier for method invocation
+                    # print_child_type_text()
+
                     first_child = node.named_children[0]
                     match first_child.type:
                         case "identifier":
                             self.use_class_set.add(first_child.text.decode())
+                        case "field_access":
+                            pass # handle it next level
                         case _:
                             raise Exception("unhandled case in method_invocation")
 
                     debug_analyze_child()
+                
+                case "field_access":
+                    self.field_access_set.add(node.text.decode())
+                    print_debug_info(node.text)
                 
                 case "argument_list":
                     print_debug_info(node.text)
@@ -210,10 +218,11 @@ if __name__ == "__main__":
     for name, content in name_content_list:
         java_analyzer_list.append(JavaAnalyzer(name, content))
 
-    test_java_analyzer = java_analyzer_list[0]
+    test_java_analyzer = java_analyzer_list[1]
     test_java_analyzer.analyze()
     print()
     print("import files:", test_java_analyzer.import_file_set)
     print("import packages:", test_java_analyzer.import_package_set)
     print("public classes:", test_java_analyzer.public_class_set)
-    print("used classes set:", test_java_analyzer.use_class_set)
+    print("used classes:", test_java_analyzer.use_class_set)
+    print("field acess:", test_java_analyzer.field_access_set)
