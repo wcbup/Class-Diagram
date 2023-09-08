@@ -20,3 +20,12 @@ class JavaClass:
             str
         ] = set()  # the of id of the classes its nonstatic innerclass
         self.depend_set: Set[str] = set()  # the of id of the classes it depends on
+
+    def __hash__(self) -> int:
+        return self.id.__hash__()
+
+    def __eq__(self, __value: JavaClass) -> bool:
+        return self.id == __value.id
+
+    def __str__(self) -> str:
+        return "123"
