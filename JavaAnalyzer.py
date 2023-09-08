@@ -128,8 +128,21 @@ class JavaAnalyzer:
 
                 case "method_declaration":
                     for child_node in node.named_children:
+                        # print(" " * debug_level, child_node.type, child_node.text)
+                        print(" " * debug_level, child_node.type)
+                        analyze_node(child_node, debug_level + 1)
+
+                case "formal_parameters":
+                    for child_node in node.named_children:
+                        # print(" " * debug_level, child_node.type, child_node.text)
+                        print(" " * debug_level, child_node.type)
+                        analyze_node(child_node, debug_level + 1)
+                
+                case "formal_parameter":
+                    for child_node in node.named_children:
                         print(" " * debug_level, child_node.type, child_node.text)
                         analyze_node(child_node, debug_level + 1)
+
 
         for node in self.root_node.named_children:
             print(node.type)
