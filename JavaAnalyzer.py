@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import List, Set
 from load_java_files import load_java_files
 import tree_sitter
+from JavaClass import JavaClass
 
 
 class JavaAnalyzer:
@@ -19,9 +20,11 @@ class JavaAnalyzer:
         self.import_package_set: Set[
             str
         ] = set()  # the set of names of the packages it imports
-        self.public_class_set: Set[str] = set()  # the set of public classes it creates
+        self.public_class_set: Set[
+            JavaClass
+        ] = set()  # the set of public classes it creates
         self.use_class_set: Set[str] = set()  # the set of the classes it uses
-        self.field_access_set: Set[str] = set() # the set of the field acceess
+        self.field_access_set: Set[str] = set()  # the set of the field acceess
 
         # load the tree sitter
         tree_sitter.Language.build_library(
@@ -46,9 +49,15 @@ class JavaAnalyzer:
         analyze the code and extract the information
         """
 
-        def analyze_node(node: tree_sitter.Node, debug_level: int):
+        def analyze_node(
+            node: tree_sitter.Node, debug_level: int, current_class: JavaClass | None
+        ):
             """
             analyze one node
+
+            :param node: the node currently analyzing
+            :param debug_level: help to format the debug output
+            :param current_class: the javaclass currently focus on
             """
 
             def debug_analyze_child() -> None:
@@ -58,7 +67,7 @@ class JavaAnalyzer:
                 """
                 for child_node in node.named_children:
                     print(" " * debug_level, child_node.type)
-                    analyze_node(child_node, debug_level + 1)
+                    analyze_node(child_node, debug_level + 1, current_class)
 
             def print_child_type_text() -> None:
                 """
@@ -78,7 +87,7 @@ class JavaAnalyzer:
                 analyze all the children nodes
                 """
                 for child_node in node.named_children:
-                    analyze_node(child_node, debug_level + 1)
+                    analyze_node(child_node, debug_level + 1, current_class)
 
             match node.type:
                 case "package_declaration":
@@ -89,7 +98,7 @@ class JavaAnalyzer:
                     if scoped_id_node.type != "scoped_identifier":
                         raise Exception("unhandled situation in package_declaration")
 
-                    self.package_name = scoped_id_node.text
+                    self.package_name = scoped_id_node.text.decode()
 
                 case "import_declaration":
                     debug_analyze_child()
@@ -124,6 +133,8 @@ class JavaAnalyzer:
                     return
 
                 case "class_declaration":
+                    # print_child_type_text()
+
                     # the node of the identifier
                     id_node = node.named_children[1]
                     if id_node.type != "identifier":
@@ -131,7 +142,12 @@ class JavaAnalyzer:
 
                     match node.named_children[0].text.decode():
                         case "public":
-                            self.public_class_set.add(id_node.text.decode())
+                            # create new java class
+                            new_class = JavaClass(
+                                self.package_name, id_node.text.decode()
+                            )
+                            self.public_class_set.add(new_class)
+                            current_class = new_class  # change current focus class
                         case _:
                             raise Exception(
                                 "unhandled situation in class_declaration!",
@@ -183,7 +199,7 @@ class JavaAnalyzer:
 
                 case "expression_statement":
                     debug_analyze_child()
-                
+
                 case "method_invocation":
                     # print_child_type_text()
 
@@ -192,22 +208,31 @@ class JavaAnalyzer:
                         case "identifier":
                             self.use_class_set.add(first_child.text.decode())
                         case "field_access":
-                            pass # handle it next level
+                            pass  # handle it next level
                         case _:
                             raise Exception("unhandled case in method_invocation")
 
                     debug_analyze_child()
-                
+
                 case "field_access":
                     self.field_access_set.add(node.text.decode())
                     print_debug_info(node.text)
-                
+                    # debug_analyze_child()
+
                 case "argument_list":
                     print_debug_info(node.text)
 
         for node in self.root_node.named_children:
             print(node.type)
-            analyze_node(node, 0)
+            analyze_node(node, 0, None)
+
+        print()
+        print("import files:", self.import_file_set)
+        print("import packages:", self.import_package_set)
+        print("public classes:", [i.id for i in self.public_class_set])
+        print("used classes:", self.use_class_set)
+        print("field acess:", self.field_access_set)
+        print()
 
 
 # test code
@@ -218,11 +243,8 @@ if __name__ == "__main__":
     for name, content in name_content_list:
         java_analyzer_list.append(JavaAnalyzer(name, content))
 
-    test_java_analyzer = java_analyzer_list[1]
+    # for java_analyzer in java_analyzer_list:
+    #     java_analyzer.analyze()
+
+    test_java_analyzer = java_analyzer_list[0]
     test_java_analyzer.analyze()
-    print()
-    print("import files:", test_java_analyzer.import_file_set)
-    print("import packages:", test_java_analyzer.import_package_set)
-    print("public classes:", test_java_analyzer.public_class_set)
-    print("used classes:", test_java_analyzer.use_class_set)
-    print("field acess:", test_java_analyzer.field_access_set)
