@@ -166,10 +166,15 @@ class JavaAnalyzer:
                     debug_analyze_child()
 
                 case "field_declaration":
+                    type_node = node.named_children[0]  # the node for type
+                    if type_node.type == "type_identifier":
+                        current_class.aggregate_name_set.add(type_node.text.decode())
+
                     debug_analyze_child()
 
                 case "type_identifier":
                     print_debug_info(node.text)
+                    current_class.depend_name_set.add(node.text.decode())
 
                 case "void_type":
                     print_debug_info(node.text)
@@ -204,7 +209,7 @@ class JavaAnalyzer:
                     first_child = node.named_children[0]
                     match first_child.type:
                         case "identifier":
-                            pass # TBD
+                            current_class.depend_name_set.add(first_child.text.decode())
                         case "field_access":
                             pass  # handle it next level
                         case _:
@@ -230,6 +235,11 @@ class JavaAnalyzer:
         print("public classes:", [i.id for i in self.public_class_set])
         print("field acess:", self.field_access_set)
         print()
+
+        for java_class in self.public_class_set:
+            print(java_class.id)
+            print(" ", "aggregate name set:", java_class.aggregate_name_set)
+            print(" ", "depend name set:", java_class.depend_name_set)
 
 
 # test code
