@@ -45,7 +45,7 @@ class JavaAnalyzer:
         analyze the code and extract the information
         """
 
-        def analyze_node(node: tree_sitter.Node):
+        def analyze_node(node: tree_sitter.Node, debug_level: int):
             """
             analyze one node
             """
@@ -103,29 +103,29 @@ class JavaAnalyzer:
 
                     for child_node in node.named_children:
                         # print(" ", child_node.type, child_node.text.decode())
-                        analyze_node(child_node)
+                        analyze_node(child_node, debug_level + 1)
 
                 case "class_body":
                     for child_node in node.named_children:
                         # print(" ", child_node.type, child_node.text.decode())
-                        print(" ", child_node.type)
-                        analyze_node(child_node)
+                        print(" " * debug_level, child_node.type)
+                        analyze_node(child_node, debug_level + 1)
 
                 case "field_declaration":
                     for child_node in node.named_children:
                         # print("  ", child_node.type, child_node.text.decode())
-                        analyze_node(child_node)
+                        analyze_node(child_node, debug_level + 1)
                 
                 case "type_identifier":
                     self.use_class_set.add(node.text.decode())
                 
                 case "method_declaration":
                     for child_node in node.named_children:
-                        print("  ", child_node.type, child_node.text.decode())
+                        print(" " * debug_level, child_node.type, child_node.text.decode())
 
         for node in self.root_node.named_children:
             print(node.type)
-            analyze_node(node)
+            analyze_node(node, 0)
 
 
 # test code
