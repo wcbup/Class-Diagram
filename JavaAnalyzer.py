@@ -265,7 +265,7 @@ class JavaAnalyzer:
         check if its classes depend on classes from another java_analyzer
         add them if identify dependencies
         """
-        # check if it imports java_analyzer 
+        # check if it imports java_analyzer
         if (
             self.package_name == java_analyzer.package_name
             or java_analyzer.id in self.import_file_set
@@ -274,7 +274,6 @@ class JavaAnalyzer:
             for source_class in java_analyzer.public_class_set:
                 for java_class in self.public_class_set:
                     java_class.add_dependency_if_depend(source_class)
-        
 
 
 # test code
@@ -309,4 +308,3 @@ if __name__ == "__main__":
             print(" ", "aggregate id set:", java_class.aggregate_id_set)
             print(" ", "depend id set:", java_class.depend_id_set)
             print()
-        

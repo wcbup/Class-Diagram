@@ -7,15 +7,23 @@ from typing import List, Dict
 # the class represent a java file
 class JavaFile:
     def __init__(self) -> None:
-        self.id = ""  # the identification of the java file, e,g. dtu.deps.tricky.Example
+        self.id = (
+            ""  # the identification of the java file, e,g. dtu.deps.tricky.Example
+        )
         self.file_name = ""  # the name of the java file, e.g. Example
-        self.own_class_list: List[str] = []  # the classes owned by the file, e.g. ["Tricky"]
+        self.own_class_list: List[
+            str
+        ] = []  # the classes owned by the file, e.g. ["Tricky"]
         self.total_str = ""  # the string containing all the text in the file
-        self.package_name = "" # the name of the package the file belonging to
-        self.import_file_list: List[str] = [] # the files imported by the file, i.e. ['dtu.deps.util.Util']
-        self.import_package_list: List[str] = [] # the packages imported by the file, i.e. ['dtu.deps.util']
-        self.new_class_list: List[str] = [] # the class newed by the file
-        self.dependency_list: List[str] = [] # the dependency list of the java file
+        self.package_name = ""  # the name of the package the file belonging to
+        self.import_file_list: List[
+            str
+        ] = []  # the files imported by the file, i.e. ['dtu.deps.util.Util']
+        self.import_package_list: List[
+            str
+        ] = []  # the packages imported by the file, i.e. ['dtu.deps.util']
+        self.new_class_list: List[str] = []  # the class newed by the file
+        self.dependency_list: List[str] = []  # the dependency list of the java file
 
     def load_file(self, file_path: str) -> None:
         """
@@ -31,10 +39,10 @@ class JavaFile:
         dot_location = file_path.rfind(".")
         self.file_name = file_path[:dot_location]
         dot_location = self.file_name.rfind("\\")
-        self.file_name = self.file_name[dot_location + 1:]
+        self.file_name = self.file_name[dot_location + 1 :]
         # print(self.file_name)
         tmp_file.close()
-    
+
     def remove_regex(self, reg_pattern: str) -> None:
         """
         remove the strings matching the reg_pattern in 'total_str'
@@ -46,8 +54,8 @@ class JavaFile:
         """
         remove the comments in the 'total_str'
         """
-        regex_pattern = "\/\/.*|\/\*(.|\n)*?\*\/" # the regular expression for comment
-        
+        regex_pattern = "\/\/.*|\/\*(.|\n)*?\*\/"  # the regular expression for comment
+
         # replace the comments with empty string, i.e. remove all the comments
         self.remove_regex(regex_pattern)
 
@@ -55,22 +63,24 @@ class JavaFile:
         """
         remove the strings in the 'total_str'
         """
-        regex_pattern = "\"\"\"\n(.|\n)*?\"\"\"" # the regular expression for string blockhh
-        self.remove_regex(regex_pattern) # remove string block
-        
-        regex_pattern = "\".*?\"" # the regular expression for one-line string
-        self.remove_regex(regex_pattern) # remove one-line string
-    
+        regex_pattern = '"""\n(.|\n)*?"""'  # the regular expression for string blockhh
+        self.remove_regex(regex_pattern)  # remove string block
+
+        regex_pattern = '".*?"'  # the regular expression for one-line string
+        self.remove_regex(regex_pattern)  # remove one-line string
+
     def get_package_name(self) -> None:
         """
         get the package_name from the 'total_str'
         """
-        regex_pattern = "package\s+[\w.]+" # the regular expression for package
-        match_result: re.Match = re.search(regex_pattern, self.total_str) # search the package name
+        regex_pattern = "package\s+[\w.]+"  # the regular expression for package
+        match_result: re.Match = re.search(
+            regex_pattern, self.total_str
+        )  # search the package name
 
         if match_result == None:
             raise Exception(f"Can't find package name in {self.file_name}")
-        
+
         # get the name of the package
         match_string: str = match_result.group()
         self.package_name = match_string.split(" ")[-1]
@@ -83,24 +93,26 @@ class JavaFile:
         self.get_package_name()
         self.id = self.package_name + "." + self.file_name
         # print(self.id)
-    
+
     def get_own_class_list(self) -> None:
         """
         get the owned class list of the java file
         """
-        regex_pattern = "public\s+class\s+[\w.]+" # the regular expression for public class
+        regex_pattern = (
+            "public\s+class\s+[\w.]+"  # the regular expression for public class
+        )
         match_results: List[re.Match] = re.findall(regex_pattern, self.total_str)
-        
+
         # get the name of the class
         for result in match_results:
             self.own_class_list.append(result.split(" ")[-1])
         # print(self.own_class_list)
-    
+
     def get_import_file_list(self) -> None:
         """
         get imported file list of the java file
         """
-        regex_pattern = "import\s+[\w.]+\s*;" # the regular expression for import file
+        regex_pattern = "import\s+[\w.]+\s*;"  # the regular expression for import file
         match_results: List[re.Match] = re.findall(regex_pattern, self.total_str)
 
         # get the name of the imported file
@@ -125,7 +137,9 @@ class JavaFile:
         """
         get imported package list of the java file
         """
-        regex_pattern = "import\s+[\w.]+\*\s*;" # the regular expression for import package
+        regex_pattern = (
+            "import\s+[\w.]+\*\s*;"  # the regular expression for import package
+        )
         match_results: List[re.Match] = re.findall(regex_pattern, self.total_str)
 
         # get the name of the imported packages
@@ -138,12 +152,12 @@ class JavaFile:
                     self.import_package_list.append(tmp_str[:dot_location])
                     break
         # print(self.id, self.import_package_list)
-    
+
     def get_new_class_list(self) -> None:
         """
         get the list of the class newed by the file
         """
-        regex_pattern = "new\s+\w+" # the regular expression for new class
+        regex_pattern = "new\s+\w+"  # the regular expression for new class
         match_results: List[re.Match] = re.findall(regex_pattern, self.total_str)
 
         # get the names of the newed classes
@@ -152,7 +166,7 @@ class JavaFile:
 
         # remove duplicates
         self.new_class_list = list(set(self.new_class_list))
-    
+
     def init(self) -> None:
         """
         initialize the JavaFile,
@@ -174,7 +188,7 @@ class JavaFile:
         self.add_lang_dependency()
 
         # print(self.id, self.own_class_list, self.import_file_list, self.import_package_list, self.new_class_list)
-    
+
     def add_dependency_if_depended(self, java_file: JavaFile) -> None:
         """
         add the id of 'java_file' to the dependency list if it depends on 'java_file'
@@ -184,7 +198,10 @@ class JavaFile:
             return
 
         # check if package list matched
-        if java_file.package_name in self.import_package_list or java_file.package_name == self.package_name:
+        if (
+            java_file.package_name in self.import_package_list
+            or java_file.package_name == self.package_name
+        ):
             # print(java_file.id, "is found in", self.id)
             for owned_class in java_file.own_class_list:
                 # check if its class is used
@@ -192,7 +209,7 @@ class JavaFile:
                     # print("found", owned_class, "from", java_file.id, "in", self.id)
                     self.dependency_list.append(java_file.id)
                     return
-        
+
         # check direct import
         result = re.search(java_file.id, self.total_str)
         if result != None:
@@ -238,33 +255,34 @@ class JavaFile:
             "Throwable",
             "Void",
         ]
-        
+
         # check if the classes in lang are used
         for class_name in lang_dependencies_list:
             result = re.search(class_name, self.total_str)
             if result != None:
                 self.dependency_list.append("java.lang." + class_name)
 
+
 # class that draws the dependency graph
 class Painter:
     def __init__(self) -> None:
-        self.javafile_list: List[JavaFile] = [] # the list containing all the javafile
-        self.dot_code = "" # the dot code representing the graph
-    
+        self.javafile_list: List[JavaFile] = []  # the list containing all the javafile
+        self.dot_code = ""  # the dot code representing the graph
+
     def add_one(self, java_file: JavaFile) -> None:
         """
         add one java file to the list
         """
         self.javafile_list.append(java_file)
-    
+
     def generate_dot_code(self) -> None:
         """
         generate the dot code
         save the code into './result.dot'
         """
-        dot_id_map: Dict[str, str] = {} # the map for javafile id and dot id
-        self.dot_code = "digraph SourceGra {\n" # the code for the dot file
-        dot_id = 0 # the id for javafile in dot code
+        dot_id_map: Dict[str, str] = {}  # the map for javafile id and dot id
+        self.dot_code = "digraph SourceGra {\n"  # the code for the dot file
+        dot_id = 0  # the id for javafile in dot code
 
         # allocate the dot id to each javafile
         for java_file in self.javafile_list:
@@ -276,15 +294,17 @@ class Painter:
                 if tmp_file_id not in dot_id_map:
                     dot_id_map[tmp_file_id] = str(dot_id)
                     dot_id += 1
-        
+
         for java_id in dot_id_map:
-            self.dot_code += f"x{dot_id_map[java_id]} [label = \"{java_id}\";\n]"
+            self.dot_code += f'x{dot_id_map[java_id]} [label = "{java_id}";\n]'
 
         for java_file in self.javafile_list:
             for depend_file_id in java_file.dependency_list:
-                self.dot_code += f"x{dot_id_map[java_file.id]} -> x{dot_id_map[depend_file_id]};\n"
-        
-        self.dot_code += "}" # add last brace
+                self.dot_code += (
+                    f"x{dot_id_map[java_file.id]} -> x{dot_id_map[depend_file_id]};\n"
+                )
+
+        self.dot_code += "}"  # add last brace
 
         dot_file_path = "./result.dot"
         with open(dot_file_path, "w") as f:
@@ -301,6 +321,7 @@ class Painter:
         os.system(command)
         # print(command)
 
+
 # test code
 if __name__ == "__main__":
     import glob
@@ -308,9 +329,11 @@ if __name__ == "__main__":
     root_directory_path = "course-02242-examples"
     file_paths = []
     # find all the files ending with '.java'
-    for file_path in glob.glob("./" + root_directory_path + "/**/*.java", recursive=True):
+    for file_path in glob.glob(
+        "./" + root_directory_path + "/**/*.java", recursive=True
+    ):
         file_paths.append(file_path)
-    
+
     java_file_list: List[JavaFile] = []
 
     for file_path in file_paths:
@@ -328,14 +351,14 @@ if __name__ == "__main__":
 
         # print(root_directory_path, file_path)
         # print(tmp_java_file.total_str) # print the text in the file
-    
+
     # add dependency
     for java_file in java_file_list:
         for tmp_java_file in java_file_list:
             if java_file == tmp_java_file:
                 continue
             java_file.add_dependency_if_depended(tmp_java_file)
-    
+
     # show the dependencies
     for java_file in java_file_list:
         print(java_file.id, java_file.dependency_list)
@@ -344,8 +367,7 @@ if __name__ == "__main__":
 
     for java_file in java_file_list:
         painter.add_one(java_file)
-    
+
     painter.generate_dot_code()
     # print(painter.dot_code)
     painter.generate_graph_and_show()
-

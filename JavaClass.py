@@ -102,7 +102,7 @@ class JavaClass:
             if name in lang_dependencies_set:
                 self.depend_id_set.add(add_lang_prefix(name))
                 self.depend_field_set.remove(field_name)
-    
+
     def add_dependency_if_depend(self, java_class: JavaClass) -> None:
         """
         add the dependency if it depends on java_class
@@ -113,7 +113,7 @@ class JavaClass:
         if java_class.name in self.depend_name_set:
             self.depend_id_set.add(java_class.id)
             self.depend_name_set.remove(java_class.name)
-    
+
     def add_dependency_in_field(self) -> None:
         """
         add the depency left in field set
