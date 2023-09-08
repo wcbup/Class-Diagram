@@ -154,6 +154,9 @@ class JavaAnalyzer:
                 case "type_identifier":
                     print_debug_info(node.text)
                     self.use_class_set.add(node.text.decode())
+                
+                case "void_type":
+                    print_debug_info(node.text)
 
                 case "variable_declarator":
                     print_debug_info(node.text)
