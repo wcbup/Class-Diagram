@@ -244,9 +244,12 @@ class JavaAnalyzer:
             print(" ", "depend name set:", java_class.depend_name_set)
             print(" ", "depend field set:", java_class.depend_field_set)
             print()
-        
+
+        # add the dependency from java lang
+        # add the dependency left in field set
         for java_class in self.public_class_set:
             java_class.add_lang_dependency()
+            java_class.add_dependency_in_field()
 
         for java_class in self.public_class_set:
             print(java_class.id)
@@ -257,6 +260,22 @@ class JavaAnalyzer:
             print(" ", "depend id set:", java_class.depend_id_set)
             print()
 
+    def check_dependency(self, java_analyzer: JavaAnalyzer) -> None:
+        """
+        check if its classes depend on classes from another java_analyzer
+        add them if identify dependencies
+        """
+        # check if it imports java_analyzer 
+        if (
+            self.package_name == java_analyzer.package_name
+            or java_analyzer.id in self.import_file_set
+            or java_analyzer.package_name in self.import_package_set
+        ):
+            for source_class in java_analyzer.public_class_set:
+                for java_class in self.public_class_set:
+                    java_class.add_dependency_if_depend(source_class)
+        
+
 
 # test code
 if __name__ == "__main__":
@@ -265,9 +284,29 @@ if __name__ == "__main__":
     java_analyzer_list: list[JavaAnalyzer] = []
     for name, content in name_content_list:
         java_analyzer_list.append(JavaAnalyzer(name, content))
+        java_analyzer_list[-1].analyze()
 
     # for java_analyzer in java_analyzer_list:
     #     java_analyzer.analyze()
 
-    test_java_analyzer = java_analyzer_list[2]
-    test_java_analyzer.analyze()
+    for i in java_analyzer_list:
+        for j in java_analyzer_list:
+            if i == j:
+                continue
+            else:
+                i.check_dependency(j)
+
+    # test_java_analyzer = java_analyzer_list[0]
+    # test_java_analyzer.analyze()
+
+    print("---------")
+    for java_analyzer in java_analyzer_list:
+        for java_class in java_analyzer.public_class_set:
+            print(java_class.id)
+            print(" ", "aggregate name set:", java_class.aggregate_name_set)
+            print(" ", "depend name set:", java_class.depend_name_set)
+            print(" ", "depend field set:", java_class.depend_field_set)
+            print(" ", "aggregate id set:", java_class.aggregate_id_set)
+            print(" ", "depend id set:", java_class.depend_id_set)
+            print()
+        
