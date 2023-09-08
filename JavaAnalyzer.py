@@ -49,6 +49,27 @@ class JavaAnalyzer:
             """
             analyze one node
             """
+
+            def print_child_type() -> None:
+                """
+                print the types of children of the node
+                """
+                for child_node in node.named_children:
+                    print(" " * debug_level, child_node.type)
+            
+            def print_child_type_text() -> None:
+                """
+                print the types and texts of children of the node
+                """
+                for child_node in node.named_children:
+                    print(" " * debug_level, child_node.type, child_node.text)
+            
+            def print_debug_info(info: str | bytes) -> None:
+                """
+                print the debug info
+                """
+                print(" " * debug_level, info)
+
             match node.type:
                 case "package_declaration":
                     for child_node in node.named_children:
@@ -106,6 +127,9 @@ class JavaAnalyzer:
                         # print(" " * debug_level, child_node.type, child_node.text)
                         print(" " * debug_level, child_node.type)
                         analyze_node(child_node, debug_level + 1)
+                
+                case "modifiers":
+                    print(, node.text)
 
                 case "class_body":
                     for child_node in node.named_children:
