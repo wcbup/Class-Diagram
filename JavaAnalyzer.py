@@ -50,12 +50,14 @@ class JavaAnalyzer:
             analyze one node
             """
 
-            def print_child_type() -> None:
+            def debug_analyze_child() -> None:
                 """
                 print the types of children of the node
+                analyze all the children
                 """
                 for child_node in node.named_children:
                     print(" " * debug_level, child_node.type)
+                    analyze_node(child_node, debug_level + 1)
             
             def print_child_type_text() -> None:
                 """
@@ -79,9 +81,7 @@ class JavaAnalyzer:
 
             match node.type:
                 case "package_declaration":
-                    for child_node in node.named_children:
-                        print(" " * debug_level, child_node.type)
-                        analyze_node(child_node, debug_level + 1)
+                    debug_analyze_child()
 
                     # scoped_identifier
                     scoped_id_node = node.named_children[0]
@@ -90,12 +90,8 @@ class JavaAnalyzer:
 
                     self.package_name = scoped_id_node.text
 
-                    # print(self.package_name)
-
                 case "import_declaration":
-                    for child_node in node.named_children:
-                        print(" " * debug_level, child_node.type)
-                        analyze_node(child_node, debug_level + 1)
+                    debug_analyze_child()
 
                     # scoped_identifier
                     scoped_id_node = node.named_children[0]
@@ -113,7 +109,7 @@ class JavaAnalyzer:
                             )
 
                 case "scoped_identifier":
-                    print(" " * debug_level, node.text)
+                    print_debug_info(node.text)
 
                 case "class_declaration":
                     # the node of the identifier
@@ -130,49 +126,32 @@ class JavaAnalyzer:
                                 node.named_children[0].text,
                             )
 
-                    for child_node in node.named_children:
-                        # print(" " * debug_level, child_node.type, child_node.text)
-                        print(" " * debug_level, child_node.type)
-                        analyze_node(child_node, debug_level + 1)
+                    debug_analyze_child()
                 
                 case "modifiers":
                     print_debug_info(node.text)
 
                 case "class_body":
-                    for child_node in node.named_children:
-                        # print(" " * debug_level, child_node.type, child_node.text)
-                        print(" " * debug_level, child_node.type)
-                        analyze_node(child_node, debug_level + 1)
+                    debug_analyze_child()
 
                 case "field_declaration":
-                    for child_node in node.named_children:
-                        # print(" " * debug_level, child_node.type, child_node.text)
-                        print(" " * debug_level, child_node.type)
-                        analyze_node(child_node, debug_level + 1)
-
+                    debug_analyze_child()
+                    
                 case "type_identifier":
-                    print(" " * debug_level, node.text)
+                    print_debug_info(node.text)
                     self.use_class_set.add(node.text.decode())
 
                 case "variable_declarator":
-                    print(" " * debug_level, node.text)
+                    print_debug_info(node.text)
 
                 case "method_declaration":
-                    for child_node in node.named_children:
-                        # print(" " * debug_level, child_node.type, child_node.text)
-                        print(" " * debug_level, child_node.type)
-                        analyze_node(child_node, debug_level + 1)
+                    debug_analyze_child()
 
                 case "formal_parameters":
-                    for child_node in node.named_children:
-                        # print(" " * debug_level, child_node.type, child_node.text)
-                        print(" " * debug_level, child_node.type)
-                        analyze_node(child_node, debug_level + 1)
+                    debug_analyze_child()
                 
                 case "formal_parameter":
-                    for child_node in node.named_children:
-                        print(" " * debug_level, child_node.type, child_node.text)
-                        analyze_node(child_node, debug_level + 1)
+                    debug_analyze_child()
 
 
         for node in self.root_node.named_children:
