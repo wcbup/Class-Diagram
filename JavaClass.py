@@ -12,6 +12,10 @@ class JavaClass:
         self.package_name = package_name
         self.name = class_name
 
+        """
+        name sets serve as 'temporary' set
+        once we can identify their specific source, we move them into id set
+        """
         self.inherit_id_set: Set[str] = set()  # the id of the classes it extends
         self.inherit_name_set: Set[str] = set()  # the name of the classes it extends
 
