@@ -23,7 +23,6 @@ class JavaAnalyzer:
         self.public_class_set: Set[
             JavaClass
         ] = set()  # the set of public classes it creates
-        self.use_class_set: Set[str] = set()  # the set of the classes it uses
         self.field_access_set: Set[str] = set()  # the set of the field acceess
 
         # load the tree sitter
@@ -171,7 +170,6 @@ class JavaAnalyzer:
 
                 case "type_identifier":
                     print_debug_info(node.text)
-                    self.use_class_set.add(node.text.decode())
 
                 case "void_type":
                     print_debug_info(node.text)
@@ -206,7 +204,7 @@ class JavaAnalyzer:
                     first_child = node.named_children[0]
                     match first_child.type:
                         case "identifier":
-                            self.use_class_set.add(first_child.text.decode())
+                            pass # TBD
                         case "field_access":
                             pass  # handle it next level
                         case _:
@@ -230,7 +228,6 @@ class JavaAnalyzer:
         print("import files:", self.import_file_set)
         print("import packages:", self.import_package_set)
         print("public classes:", [i.id for i in self.public_class_set])
-        print("used classes:", self.use_class_set)
         print("field acess:", self.field_access_set)
         print()
 
