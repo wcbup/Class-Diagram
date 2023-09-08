@@ -184,6 +184,14 @@ class JavaAnalyzer:
                     debug_analyze_child()
                 
                 case "method_invocation":
+                    # get the first identifier for method invocation
+                    first_child = node.named_children[0]
+                    match first_child.type:
+                        case "identifier":
+                            self.use_class_set.add(first_child.text.decode())
+                        case _:
+                            raise Exception("unhandled case in method_invocation")
+
                     print_child_type_text()
 
         for node in self.root_node.named_children:
