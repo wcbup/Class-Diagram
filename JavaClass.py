@@ -28,4 +28,4 @@ class JavaClass:
         return self.id == __value.id
 
     def __str__(self) -> str:
-        return "123"
+        return self.id
