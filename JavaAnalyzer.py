@@ -113,11 +113,15 @@ class JavaAnalyzer:
 
                 case "field_declaration":
                     for child_node in node.named_children:
-                        print("  ", child_node.type, child_node.text.decode())
+                        # print("  ", child_node.type, child_node.text.decode())
                         analyze_node(child_node)
                 
                 case "type_identifier":
                     self.use_class_set.add(node.text.decode())
+                
+                case "method_declaration":
+                    for child_node in node.named_children:
+                        print("  ", child_node.type, child_node.text.decode())
 
         for node in self.root_node.named_children:
             print(node.type)
