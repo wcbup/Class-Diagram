@@ -129,7 +129,7 @@ class JavaAnalyzer:
                         analyze_node(child_node, debug_level + 1)
                 
                 case "modifiers":
-                    print(, node.text)
+                    print_debug_info(node.text)
 
                 case "class_body":
                     for child_node in node.named_children:
