@@ -141,6 +141,7 @@ class JavaAnalyzer:
 
                 case "modifiers":
                     print_debug_info(node.text)
+                    # print_child_type_text()
 
                 case "identifier":
                     print_debug_info(node.text)
@@ -180,6 +181,9 @@ class JavaAnalyzer:
                     debug_analyze_child()
 
                 case "expression_statement":
+                    debug_analyze_child()
+                
+                case "method_invocation":
                     print_child_type_text()
 
         for node in self.root_node.named_children:
