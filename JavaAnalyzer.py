@@ -69,6 +69,13 @@ class JavaAnalyzer:
                 print the debug info
                 """
                 print(" " * debug_level, info)
+            
+            def analyze_child_node() -> None:
+                """
+                analyze all the children nodes
+                """
+                for child_node in node.named_children:
+                    analyze_node(child_node, debug_level + 1)
 
             match node.type:
                 case "package_declaration":
