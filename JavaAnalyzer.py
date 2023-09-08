@@ -192,7 +192,10 @@ class JavaAnalyzer:
                         case _:
                             raise Exception("unhandled case in method_invocation")
 
-                    print_child_type_text()
+                    debug_analyze_child()
+                
+                case "argument_list":
+                    print_debug_info(node.text)
 
         for node in self.root_node.named_children:
             print(node.type)
@@ -209,6 +212,7 @@ if __name__ == "__main__":
 
     test_java_analyzer = java_analyzer_list[0]
     test_java_analyzer.analyze()
+    print()
     print("import files:", test_java_analyzer.import_file_set)
     print("import packages:", test_java_analyzer.import_package_set)
     print("public classes:", test_java_analyzer.public_class_set)
