@@ -7,10 +7,11 @@ from JavaClass import JavaClass
 
 class JavaAnalyzer:
     """
-    class for analyzing a java file
+    class for analyzing one java file
     """
 
     def __init__(self, name: str, content: str) -> JavaAnalyzer:
+        self.id = ""  # the id of the java file, e.g. dtu.compute.util.Utils
         self.name = name  # the name of the java file
         self.content = content  # the content of the java file
         self.package_name = ""  # the name of package it belongs to
@@ -97,6 +98,8 @@ class JavaAnalyzer:
                         raise Exception("unhandled situation in package_declaration")
 
                     self.package_name = scoped_id_node.text.decode()
+                    # set up id
+                    self.id = self.package_name + self.name
 
                 case "import_declaration":
                     debug_analyze_child()
