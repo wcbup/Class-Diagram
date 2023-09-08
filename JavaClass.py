@@ -35,6 +35,8 @@ class JavaClass:
         self.depend_id_set: Set[str] = set()  # the id of the classes it depends on
         self.depend_name_set: Set[str] = set()  # the id of the classes it depends on
 
+        self.depend_field_set: Set[str] = set() # the fields it depends on
+
     def __hash__(self) -> int:
         return self.id.__hash__()
 

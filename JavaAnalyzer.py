@@ -23,7 +23,6 @@ class JavaAnalyzer:
         self.public_class_set: Set[
             JavaClass
         ] = set()  # the set of public classes it creates
-        self.field_access_set: Set[str] = set()  # the set of the field acceess
 
         # load the tree sitter
         tree_sitter.Language.build_library(
@@ -218,7 +217,7 @@ class JavaAnalyzer:
                     debug_analyze_child()
 
                 case "field_access":
-                    self.field_access_set.add(node.text.decode())
+                    current_class.depend_field_set.add(node.text.decode())
                     print_debug_info(node.text)
                     # debug_analyze_child()
 
@@ -233,13 +232,13 @@ class JavaAnalyzer:
         print("import files:", self.import_file_set)
         print("import packages:", self.import_package_set)
         print("public classes:", [i.id for i in self.public_class_set])
-        print("field acess:", self.field_access_set)
         print()
 
         for java_class in self.public_class_set:
             print(java_class.id)
             print(" ", "aggregate name set:", java_class.aggregate_name_set)
             print(" ", "depend name set:", java_class.depend_name_set)
+            print(" ", "depend field set:", java_class.depend_field_set)
 
 
 # test code
@@ -253,5 +252,5 @@ if __name__ == "__main__":
     # for java_analyzer in java_analyzer_list:
     #     java_analyzer.analyze()
 
-    test_java_analyzer = java_analyzer_list[0]
+    test_java_analyzer = java_analyzer_list[1]
     test_java_analyzer.analyze()
