@@ -157,6 +157,12 @@ class JavaAnalyzer:
                 
                 case "void_type":
                     print_debug_info(node.text)
+                
+                case "array_type":
+                    debug_analyze_child()
+                
+                case "dimensions":
+                    print_debug_info(node.text)
 
                 case "variable_declarator":
                     print_debug_info(node.text)
@@ -186,7 +192,7 @@ if __name__ == "__main__":
 
     test_java_analyzer = java_analyzer_list[0]
     test_java_analyzer.analyze()
-    print(test_java_analyzer.import_file_set)
-    print(test_java_analyzer.import_package_set)
-    print(test_java_analyzer.public_class_set)
-    print(test_java_analyzer.use_class_set)
+    print("import files:", test_java_analyzer.import_file_set)
+    print("import packages:", test_java_analyzer.import_package_set)
+    print("public classes:", test_java_analyzer.public_class_set)
+    print("used classes set:", test_java_analyzer.use_class_set)
