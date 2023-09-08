@@ -110,6 +110,9 @@ class JavaAnalyzer:
 
                 case "scoped_identifier":
                     print_debug_info(node.text)
+                
+                case "asterisk":
+                    print_debug_info(node.text)
 
                 case "class_declaration":
                     # the node of the identifier
