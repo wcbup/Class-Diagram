@@ -113,6 +113,14 @@ class JavaAnalyzer:
                 
                 case "asterisk":
                     print_debug_info(node.text)
+                
+                case "line_comment":
+                    # print_debug_info(node.text)
+                    return
+                
+                case "block_comment":
+                    # print_debug_info(node.text)
+                    return
 
                 case "class_declaration":
                     # the node of the identifier
