@@ -65,8 +65,6 @@ class JavaClass:
             "InheritableThreadLoca",
             "Integer",
             "Iterable",
-            "Iterator",
-            "List",
             "Long",
             "Math",
             "Number",
