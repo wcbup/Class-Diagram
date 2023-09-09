@@ -60,6 +60,7 @@ class JavaClass:
             "Integer",
             "Iterable",
             "Iterator",
+            "List",
             "Long",
             "Math",
             "Number",
