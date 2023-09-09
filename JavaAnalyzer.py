@@ -4,6 +4,7 @@ from load_java_files import load_java_files
 import tree_sitter
 from JavaClass import JavaClass
 from Painter import Painter
+import enum
 
 
 class JavaAnalyzer:
@@ -49,8 +50,18 @@ class JavaAnalyzer:
         analyze the code and extract the information
         """
 
+        class ClassState(enum.Enum):
+            INHERITANCE = 1
+            REALIZATION = 2
+            AGGREGATION = 3
+            COMPOSITION = 4
+            DEPENDENCY = 5
+
         def analyze_node(
-            node: tree_sitter.Node, debug_level: int, current_class: JavaClass | None
+            node: tree_sitter.Node,
+            debug_level: int,
+            current_class: JavaClass | None,
+            class_state: ClassState,
         ):
             """
             analyze one node
@@ -58,6 +69,7 @@ class JavaAnalyzer:
             :param node: the node currently analyzing
             :param debug_level: help to format the debug output
             :param current_class: the javaclass currently focus on
+            :param class_state: current state of the class
             """
 
             def debug_analyze_child() -> None:
@@ -67,7 +79,9 @@ class JavaAnalyzer:
                 """
                 for child_node in node.named_children:
                     print(" " * debug_level, child_node.type)
-                    analyze_node(child_node, debug_level + 1, current_class)
+                    analyze_node(
+                        child_node, debug_level + 1, current_class, class_state
+                    )
 
             def print_child_type_text() -> None:
                 """
@@ -87,7 +101,26 @@ class JavaAnalyzer:
                 analyze all the children nodes
                 """
                 for child_node in node.named_children:
-                    analyze_node(child_node, debug_level + 1, current_class)
+                    analyze_node(
+                        child_node, debug_level + 1, current_class, class_state
+                    )
+
+            def add_class_name_to_set(class_name: str) -> None:
+                """
+                add the class name to the corresponding set
+                according to class_state
+                """
+                match class_state:
+                    case ClassState.INHERITANCE:
+                        current_class.inherit_name_set.add(class_name)
+                    case ClassState.REALIZATION:
+                        current_class.realize_name_set.add(class_name)
+                    case ClassState.AGGREGATION:
+                        current_class.aggregate_name_set.add(class_name)
+                    case ClassState.COMPOSITION:
+                        current_class.compose_name_set.add(class_name)
+                    case ClassState.DEPENDENCY:
+                        current_class.depend_name_set.add(class_name)
 
             match node.type:
                 case "package_declaration":
@@ -164,16 +197,16 @@ class JavaAnalyzer:
 
                 case "identifier":
                     print_debug_info(node.text)
-                
+
                 case "super_interfaces":
                     debug_analyze_child()
-                
+
                 case "type_list":
                     debug_analyze_child()
-                
+
                 case "generic_type":
                     debug_analyze_child()
-                
+
                 case "type_arguments":
                     debug_analyze_child()
 
@@ -181,15 +214,12 @@ class JavaAnalyzer:
                     debug_analyze_child()
 
                 case "field_declaration":
-                    type_node = node.named_children[0]  # the node for type
-                    if type_node.type == "type_identifier":
-                        current_class.aggregate_name_set.add(type_node.text.decode())
-
+                    class_state = ClassState.AGGREGATION
                     debug_analyze_child()
 
                 case "type_identifier":
                     print_debug_info(node.text)
-                    current_class.depend_name_set.add(node.text.decode())
+                    add_class_name_to_set(node.text.decode())
 
                 case "void_type":
                     print_debug_info(node.text)
@@ -242,7 +272,7 @@ class JavaAnalyzer:
 
         for node in self.root_node.named_children:
             print(node.type)
-            analyze_node(node, 0, None)
+            analyze_node(node, 0, None, ClassState.DEPENDENCY)
 
         print()
         print("id:", self.id)
@@ -296,7 +326,7 @@ if __name__ == "__main__":
     java_analyzer_list: list[JavaAnalyzer] = []
     for name, content in name_content_list:
         java_analyzer_list.append(JavaAnalyzer(name, content))
-        # java_analyzer_list[-1].analyze()
+        java_analyzer_list[-1].analyze()
 
     for i in java_analyzer_list:
         for j in java_analyzer_list:
@@ -305,25 +335,25 @@ if __name__ == "__main__":
             else:
                 i.check_dependency(j)
 
-    test_java_analyzer = java_analyzer_list[0]
-    test_java_analyzer.analyze()
+    # test_java_analyzer = java_analyzer_list[0]
+    # test_java_analyzer.analyze()
 
-    # painter = Painter()
+    painter = Painter()
 
-    # print("---------")
-    # for java_analyzer in java_analyzer_list:
-    #     for java_class in java_analyzer.public_class_set:
-    #         print(java_class.id)
-    #         print(" ", "aggregate name set:", java_class.aggregate_name_set)
-    #         print(" ", "depend name set:", java_class.depend_name_set)
-    #         print(" ", "depend field set:", java_class.depend_field_set)
-    #         print(" ", "aggregate id set:", java_class.aggregate_id_set)
-    #         print(" ", "depend id set:", java_class.depend_id_set)
-    #         print()
+    print("---------")
+    for java_analyzer in java_analyzer_list:
+        for java_class in java_analyzer.public_class_set:
+            print(java_class.id)
+            print(" ", "aggregate name set:", java_class.aggregate_name_set)
+            print(" ", "depend name set:", java_class.depend_name_set)
+            print(" ", "depend field set:", java_class.depend_field_set)
+            print(" ", "aggregate id set:", java_class.aggregate_id_set)
+            print(" ", "depend id set:", java_class.depend_id_set)
+            print()
 
-    #         painter.add_one(java_class)
+            painter.add_one(java_class)
 
-    # print()
+    print()
 
-    # # painter.generate_dot_code()
-    # painter.generate_graph_and_show()
+    # painter.generate_dot_code()
+    painter.generate_graph_and_show()
