@@ -62,6 +62,7 @@ class JavaAnalyzer:
             debug_level: int,
             current_class: JavaClass | None,
             class_state: ClassState,
+            generic_type_name_set: set[str],
         ):
             """
             analyze one node
@@ -70,6 +71,7 @@ class JavaAnalyzer:
             :param debug_level: help to format the debug output
             :param current_class: the javaclass currently focus on
             :param class_state: current state of the class
+            :param generic_type_name_set: current available generic type name
             """
 
             def debug_analyze_child() -> None:
@@ -81,10 +83,16 @@ class JavaAnalyzer:
                 nonlocal debug_level
                 nonlocal node
                 nonlocal current_class
+                nonlocal generic_type_name_set
+                new_level_generic_set = generic_type_name_set.copy()
                 for child_node in node.named_children:
                     print(" " * debug_level, child_node.type)
                     analyze_node(
-                        child_node, debug_level + 1, current_class, class_state
+                        child_node,
+                        debug_level + 1,
+                        current_class,
+                        class_state,
+                        new_level_generic_set,
                     )
                     if (
                         class_state == ClassState.REALIZATION
@@ -116,9 +124,15 @@ class JavaAnalyzer:
                 nonlocal debug_level
                 nonlocal current_class
                 nonlocal class_state
+                nonlocal generic_type_name_set
+                new_level_generic_set = generic_type_name_set.copy()
                 for child_node in node.named_children:
                     analyze_node(
-                        child_node, debug_level + 1, current_class, class_state
+                        child_node,
+                        debug_level + 1,
+                        current_class,
+                        class_state,
+                        new_level_generic_set,
                     )
 
             def add_class_name_to_set(class_name: str) -> None:
@@ -224,6 +238,11 @@ class JavaAnalyzer:
                     print_debug_info(node.text)
                     # print_child_type_text()
 
+                case "type_parameters":
+                    for child_node in node.named_children:
+                        print_debug_info(child_node.text)
+                        generic_type_name_set.add(child_node.text.decode())
+
                 case "identifier":
                     print_debug_info(node.text)
 
@@ -249,7 +268,9 @@ class JavaAnalyzer:
 
                 case "type_identifier":
                     print_debug_info(node.text)
-                    add_class_name_to_set(node.text.decode())
+                    class_name = node.text.decode()
+                    if class_name not in generic_type_name_set:
+                        add_class_name_to_set(node.text.decode())
 
                 case "void_type":
                     print_debug_info(node.text)
@@ -302,8 +323,8 @@ class JavaAnalyzer:
 
         for node in self.root_node.named_children:
             print(node.type)
-            analyze_node(node, 0, None, ClassState.DEPENDENCY)
-        
+            analyze_node(node, 0, None, ClassState.DEPENDENCY, set())
+
         print()
         print("id:", self.id)
         print("import files:", self.import_file_set)
@@ -322,10 +343,14 @@ class JavaAnalyzer:
         # add the dependency from java lang
         # add the dependency left in field set
         # add the dependency in the import file set
+        # final check the dependency
         for java_class in self.public_class_set:
             java_class.add_lang_dependency()
             java_class.add_dependency_in_field()
-            java_class.depend_id_set = java_class.depend_id_set.union(self.import_file_set)
+            java_class.depend_id_set = java_class.depend_id_set.union(
+                self.import_file_set
+            )
+            java_class.final_check_dependency()
 
         for java_class in self.public_class_set:
             print(java_class.id)
@@ -363,6 +388,9 @@ if __name__ == "__main__":
         java_analyzer_list.append(JavaAnalyzer(name, content))
         java_analyzer_list[-1].analyze()
 
+    # test_java_analyzer = java_analyzer_list[3]
+    # test_java_analyzer.analyze()
+
     for i in java_analyzer_list:
         for j in java_analyzer_list:
             if i == j:
@@ -370,11 +398,8 @@ if __name__ == "__main__":
             else:
                 i.check_dependency(j)
 
-    # test_java_analyzer = java_analyzer_list[0]
-    # test_java_analyzer.analyze()
 
     painter = Painter()
-
     print("---------")
     for java_analyzer in java_analyzer_list:
         for java_class in java_analyzer.public_class_set:
@@ -385,10 +410,7 @@ if __name__ == "__main__":
             print(" ", "aggregate id set:", java_class.aggregate_id_set)
             print(" ", "depend id set:", java_class.depend_id_set)
             print()
-
             painter.add_one(java_class)
-
     print()
-
     # painter.generate_dot_code()
     painter.generate_graph_and_show()

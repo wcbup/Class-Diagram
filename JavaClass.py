@@ -129,6 +129,32 @@ class JavaClass:
             self.depend_id_set.add(java_class.id)
             self.depend_name_set.remove(java_class.name)
 
+    def final_check_dependency(self) -> None:
+        """
+        final check for dependency
+        check classes left in name set
+        compare them with depend id set
+        """
+
+        def extract_last_term(id: str) -> str:
+            """
+            extract the last term in the id
+            """
+            dot_loc = id.rfind(".")
+            return id[dot_loc + 1 :]
+
+        for class_id in self.depend_id_set:
+            for name in list(self.realize_name_set):
+                if name == extract_last_term(class_id):
+                    self.realize_id_set.add(class_id)
+                    self.realize_name_set.remove(name)
+                    break
+            for name in list(self.aggregate_name_set):
+                if name == extract_last_term(class_id):
+                    self.aggregate_id_set.add(class_id)
+                    self.aggregate_name_set.remove(name)
+                    break
+
     def add_dependency_in_field(self) -> None:
         """
         add the depency left in field set
