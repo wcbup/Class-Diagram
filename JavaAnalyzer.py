@@ -3,6 +3,7 @@ from typing import List, Set
 from load_java_files import load_java_files
 import tree_sitter
 from JavaClass import JavaClass
+from Painter import Painter
 
 
 class JavaAnalyzer:
@@ -163,6 +164,18 @@ class JavaAnalyzer:
 
                 case "identifier":
                     print_debug_info(node.text)
+                
+                case "super_interfaces":
+                    debug_analyze_child()
+                
+                case "type_list":
+                    debug_analyze_child()
+                
+                case "generic_type":
+                    debug_analyze_child()
+                
+                case "type_arguments":
+                    debug_analyze_child()
 
                 case "class_body":
                     debug_analyze_child()
@@ -278,15 +291,12 @@ class JavaAnalyzer:
 
 # test code
 if __name__ == "__main__":
-    # name_content_list = load_java_files("course-02242-examples")
-    name_content_list = load_java_files("example-dependency-graphs")
+    name_content_list = load_java_files("course-02242-examples")
+    # name_content_list = load_java_files("example-dependency-graphs")
     java_analyzer_list: list[JavaAnalyzer] = []
     for name, content in name_content_list:
         java_analyzer_list.append(JavaAnalyzer(name, content))
-        java_analyzer_list[-1].analyze()
-
-    # for java_analyzer in java_analyzer_list:
-    #     java_analyzer.analyze()
+        # java_analyzer_list[-1].analyze()
 
     for i in java_analyzer_list:
         for j in java_analyzer_list:
@@ -295,16 +305,25 @@ if __name__ == "__main__":
             else:
                 i.check_dependency(j)
 
-    # test_java_analyzer = java_analyzer_list[0]
-    # test_java_analyzer.analyze()
+    test_java_analyzer = java_analyzer_list[0]
+    test_java_analyzer.analyze()
 
-    print("---------")
-    for java_analyzer in java_analyzer_list:
-        for java_class in java_analyzer.public_class_set:
-            print(java_class.id)
-            print(" ", "aggregate name set:", java_class.aggregate_name_set)
-            print(" ", "depend name set:", java_class.depend_name_set)
-            print(" ", "depend field set:", java_class.depend_field_set)
-            print(" ", "aggregate id set:", java_class.aggregate_id_set)
-            print(" ", "depend id set:", java_class.depend_id_set)
-            print()
+    # painter = Painter()
+
+    # print("---------")
+    # for java_analyzer in java_analyzer_list:
+    #     for java_class in java_analyzer.public_class_set:
+    #         print(java_class.id)
+    #         print(" ", "aggregate name set:", java_class.aggregate_name_set)
+    #         print(" ", "depend name set:", java_class.depend_name_set)
+    #         print(" ", "depend field set:", java_class.depend_field_set)
+    #         print(" ", "aggregate id set:", java_class.aggregate_id_set)
+    #         print(" ", "depend id set:", java_class.depend_id_set)
+    #         print()
+
+    #         painter.add_one(java_class)
+
+    # print()
+
+    # # painter.generate_dot_code()
+    # painter.generate_graph_and_show()
