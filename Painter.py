@@ -60,9 +60,16 @@ class Painter:
             for aggregate_class_id in java_class.aggregate_id_set:
                 if aggregate_class_id not in java_class.realize_id_set:
                     self.dot_code += f'x{dot_id_map[java_class.id]} -> x{dot_id_map[aggregate_class_id]} [label = "aggregation"];\n'
+            for compose_class_id in java_class.compose_id_set:
+                if (
+                    compose_class_id not in java_class.aggregate_id_set
+                    and compose_class_id not in java_class.realize_id_set
+                ):
+                    self.dot_code += f'x{dot_id_map[java_class.id]} -> x{dot_id_map[compose_class_id]} [label = "composition"];\n'
             for depend_class_id in java_class.depend_id_set:
                 if (
-                    depend_class_id not in java_class.aggregate_id_set
+                    depend_class_id not in java_class.compose_id_set
+                    and depend_class_id not in java_class.aggregate_id_set
                     and depend_class_id not in java_class.realize_id_set
                 ):
                     self.dot_code += f'x{dot_id_map[java_class.id]} -> x{dot_id_map[depend_class_id]} [label = "dependency"];\n'

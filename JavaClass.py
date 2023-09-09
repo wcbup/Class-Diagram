@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Set
+from typing import Set, List
 
 
 class JavaClass:
@@ -7,10 +7,16 @@ class JavaClass:
     the class representing a java class
     """
 
-    def __init__(self, package_name: str, class_name: str) -> None:
-        self.id = package_name + "." + class_name
+    def __init__(
+        self, package_name: str, class_name: str, outter_class_name_list: List[str]
+    ) -> None:
+        self.id = package_name
+        for name in outter_class_name_list:
+            self.id += "." + name
+        self.id += "." + class_name
         self.package_name = package_name
         self.name = class_name
+        self.outter_class_name_list: list[str] = outter_class_name_list
 
         """
         name sets serve as 'temporary' set
@@ -87,7 +93,7 @@ class JavaClass:
 
         def add_lang_prefix(name: str) -> str:
             return "java.lang." + name
-        
+
         for name in list(self.realize_name_set):
             if name in lang_dependencies_set:
                 self.realize_id_set.add(add_lang_prefix(name))

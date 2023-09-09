@@ -86,7 +86,10 @@ class JavaAnalyzer:
                     analyze_node(
                         child_node, debug_level + 1, current_class, class_state
                     )
-                    if class_state == ClassState.REALIZATION and child_node.type == "type_identifier":
+                    if (
+                        class_state == ClassState.REALIZATION
+                        and child_node.type == "type_identifier"
+                    ):
                         class_state = ClassState.DEPENDENCY
 
             def print_child_type_text() -> None:
@@ -189,14 +192,26 @@ class JavaAnalyzer:
                     if id_node.type != "identifier":
                         raise Exception("unhandled situation in class_declaration!")
 
+                    if type(current_class) == type(None):
+                        new_class = JavaClass(
+                            self.package_name, id_node.text.decode(), []
+                        )
+                    else:
+                        new_outter_class_list = (
+                            current_class.outter_class_name_list.copy()
+                        )
+                        new_outter_class_list.append(current_class.name)
+                        new_class = JavaClass(
+                            self.package_name,
+                            id_node.text.decode(),
+                            new_outter_class_list,
+                        )
+                        current_class.compose_id_set.add(new_class.id)
+                    current_class = new_class  # change current focus class
+
                     match node.named_children[0].text.decode():
                         case "public":
-                            # create new java class
-                            new_class = JavaClass(
-                                self.package_name, id_node.text.decode()
-                            )
                             self.public_class_set.add(new_class)
-                            current_class = new_class  # change current focus class
                         case _:
                             raise Exception(
                                 "unhandled situation in class_declaration!",
