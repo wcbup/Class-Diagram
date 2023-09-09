@@ -58,6 +58,8 @@ class JavaClass:
             "Float",
             "InheritableThreadLoca",
             "Integer",
+            "Iterable",
+            "Iterator",
             "Long",
             "Math",
             "Number",
