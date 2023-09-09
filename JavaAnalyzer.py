@@ -303,7 +303,7 @@ class JavaAnalyzer:
         for node in self.root_node.named_children:
             print(node.type)
             analyze_node(node, 0, None, ClassState.DEPENDENCY)
-
+        
         print()
         print("id:", self.id)
         print("import files:", self.import_file_set)
@@ -321,9 +321,11 @@ class JavaAnalyzer:
 
         # add the dependency from java lang
         # add the dependency left in field set
+        # add the dependency in the import file set
         for java_class in self.public_class_set:
             java_class.add_lang_dependency()
             java_class.add_dependency_in_field()
+            java_class.depend_id_set = java_class.depend_id_set.union(self.import_file_set)
 
         for java_class in self.public_class_set:
             print(java_class.id)
