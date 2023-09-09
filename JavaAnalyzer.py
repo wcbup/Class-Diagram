@@ -77,16 +77,24 @@ class JavaAnalyzer:
                 print the types of children of the node
                 analyze all the children
                 """
+                nonlocal class_state
+                nonlocal debug_level
+                nonlocal node
+                nonlocal current_class
                 for child_node in node.named_children:
                     print(" " * debug_level, child_node.type)
                     analyze_node(
                         child_node, debug_level + 1, current_class, class_state
                     )
+                    if class_state == ClassState.REALIZATION and child_node.type == "type_identifier":
+                        class_state = ClassState.DEPENDENCY
 
             def print_child_type_text() -> None:
                 """
                 print the types and texts of children of the node
                 """
+                nonlocal node
+                nonlocal debug_level
                 for child_node in node.named_children:
                     print(" " * debug_level, child_node.type, child_node.text)
 
@@ -94,12 +102,17 @@ class JavaAnalyzer:
                 """
                 print the debug info
                 """
+                nonlocal debug_level
                 print(" " * debug_level, info)
 
             def analyze_child_node() -> None:
                 """
                 analyze all the children nodes
                 """
+                nonlocal node
+                nonlocal debug_level
+                nonlocal current_class
+                nonlocal class_state
                 for child_node in node.named_children:
                     analyze_node(
                         child_node, debug_level + 1, current_class, class_state
@@ -110,6 +123,7 @@ class JavaAnalyzer:
                 add the class name to the corresponding set
                 according to class_state
                 """
+                nonlocal class_state
                 match class_state:
                     case ClassState.INHERITANCE:
                         current_class.inherit_name_set.add(class_name)
@@ -199,6 +213,7 @@ class JavaAnalyzer:
                     print_debug_info(node.text)
 
                 case "super_interfaces":
+                    class_state = ClassState.REALIZATION
                     debug_analyze_child()
 
                 case "type_list":
@@ -283,6 +298,7 @@ class JavaAnalyzer:
 
         for java_class in self.public_class_set:
             print(java_class.id)
+            print(" ", "realize name set:", java_class.realize_name_set)
             print(" ", "aggregate name set:", java_class.aggregate_name_set)
             print(" ", "depend name set:", java_class.depend_name_set)
             print(" ", "depend field set:", java_class.depend_field_set)
@@ -296,9 +312,11 @@ class JavaAnalyzer:
 
         for java_class in self.public_class_set:
             print(java_class.id)
+            print(" ", "realize name set:", java_class.realize_name_set)
             print(" ", "aggregate name set:", java_class.aggregate_name_set)
             print(" ", "depend name set:", java_class.depend_name_set)
             print(" ", "depend field set:", java_class.depend_field_set)
+            print(" ", "realize id set:", java_class.realize_id_set)
             print(" ", "aggregate id set:", java_class.aggregate_id_set)
             print(" ", "depend id set:", java_class.depend_id_set)
             print()

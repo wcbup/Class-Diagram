@@ -42,6 +42,8 @@ class Painter:
         for java_class in self.java_class_set:
             allocate_id(java_class.id)
 
+            for tmp_file_id in java_class.realize_id_set:
+                allocate_id(tmp_file_id)
             for tmp_file_id in java_class.aggregate_id_set:
                 allocate_id(tmp_file_id)
             for tmp_file_id in java_class.depend_id_set:
@@ -53,18 +55,24 @@ class Painter:
             )
 
         for java_class in self.java_class_set:
+            for realize_class_id in java_class.realize_id_set:
+                self.dot_code += f'x{dot_id_map[java_class.id]} -> x{dot_id_map[realize_class_id]} [label = "realization"];\n'
             for aggregate_class_id in java_class.aggregate_id_set:
-                self.dot_code += f'x{dot_id_map[java_class.id]} -> x{dot_id_map[aggregate_class_id]} [label = "aggregation"];\n'
+                if aggregate_class_id not in java_class.realize_id_set:
+                    self.dot_code += f'x{dot_id_map[java_class.id]} -> x{dot_id_map[aggregate_class_id]} [label = "aggregation"];\n'
             for depend_class_id in java_class.depend_id_set:
-                if depend_class_id not in java_class.aggregate_id_set:
+                if (
+                    depend_class_id not in java_class.aggregate_id_set
+                    and depend_class_id not in java_class.realize_id_set
+                ):
                     self.dot_code += f'x{dot_id_map[java_class.id]} -> x{dot_id_map[depend_class_id]} [label = "dependency"];\n'
-        
+
         self.dot_code += "}"
 
         dot_file_path = "./result.dot"
         with open(dot_file_path, "w") as f:
             f.write(self.dot_code)
-        
+
     def generate_graph_and_show(self) -> None:
         """
         generate the graph
@@ -72,9 +80,11 @@ class Painter:
         show the graph
         """
 
-        DPI = 500 # the dpi of the result picture
+        DPI = 500  # the dpi of the result picture
         self.generate_dot_code()
-        command = f".\\Graphviz\\bin\\dot.exe -Tpng -Gdpi={DPI} .\\result.dot -o result.png"
+        command = (
+            f".\\Graphviz\\bin\\dot.exe -Tpng -Gdpi={DPI} .\\result.dot -o result.png"
+        )
         os.system(command)
         command = ".\\result.png"
         os.system(command)
