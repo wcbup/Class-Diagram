@@ -169,7 +169,10 @@ class JavaClass:
         return self.id.__hash__()
 
     def __eq__(self, __value: JavaClass) -> bool:
-        return self.id == __value.id
+        if isinstance(__value, JavaClass):
+            return self.id == __value.id
+        else:
+            return False
 
     def __str__(self) -> str:
         return self.id
