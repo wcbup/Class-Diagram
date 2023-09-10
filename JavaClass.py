@@ -92,6 +92,11 @@ class JavaClass:
         def add_lang_prefix(name: str) -> str:
             return "java.lang." + name
 
+        for name in list(self.inherit_name_set):
+            if name in lang_dependencies_set:
+                self.inherit_id_set.add(add_lang_prefix(name))
+                self.inherit_name_set.remove(name)
+
         for name in list(self.realize_name_set):
             if name in lang_dependencies_set:
                 self.realize_id_set.add(add_lang_prefix(name))
@@ -119,6 +124,9 @@ class JavaClass:
         """
         add the dependency if it depends on java_class
         """
+        if java_class.name in self.inherit_name_set:
+            self.inherit_id_set.add(java_class.id)
+            self.inherit_name_set.remove(java_class.name)
         if java_class.name in self.realize_name_set:
             self.realize_id_set.add(java_class.id)
             self.realize_name_set.remove(java_class.name)
@@ -144,6 +152,11 @@ class JavaClass:
             return id[dot_loc + 1 :]
 
         for class_id in self.depend_id_set:
+            for name in list(self.inherit_name_set):
+                if name == extract_last_term(class_id):
+                    self.inherit_id_set.add(class_id)
+                    self.inherit_name_set.remove(name)
+                    break
             for name in list(self.realize_name_set):
                 if name == extract_last_term(class_id):
                     self.realize_id_set.add(class_id)

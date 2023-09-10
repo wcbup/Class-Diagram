@@ -42,6 +42,8 @@ class Painter:
         for java_class in self.java_class_set:
             allocate_id(java_class.id)
 
+            for tmp_file_id in java_class.inherit_id_set:
+                allocate_id(tmp_file_id)
             for tmp_file_id in java_class.realize_id_set:
                 allocate_id(tmp_file_id)
             for tmp_file_id in java_class.aggregate_id_set:
@@ -55,20 +57,28 @@ class Painter:
             )
 
         for java_class in self.java_class_set:
+            for inherit_class_id in java_class.inherit_id_set:
+                self.dot_code += f'x{dot_id_map[java_class.id]} -> x{dot_id_map[inherit_class_id]} [label = "inheritance"];\n'
             for realize_class_id in java_class.realize_id_set:
-                self.dot_code += f'x{dot_id_map[java_class.id]} -> x{dot_id_map[realize_class_id]} [label = "realization"];\n'
+                if realize_class_id not in java_class.inherit_id_set:
+                    self.dot_code += f'x{dot_id_map[java_class.id]} -> x{dot_id_map[realize_class_id]} [label = "realization"];\n'
             for aggregate_class_id in java_class.aggregate_id_set:
-                if aggregate_class_id not in java_class.realize_id_set:
+                if (
+                    aggregate_class_id not in java_class.inherit_id_set
+                    and aggregate_class_id not in java_class.realize_id_set
+                ):
                     self.dot_code += f'x{dot_id_map[java_class.id]} -> x{dot_id_map[aggregate_class_id]} [label = "aggregation"];\n'
             for compose_class_id in java_class.compose_id_set:
                 if (
-                    compose_class_id not in java_class.aggregate_id_set
+                    compose_class_id not in java_class.inherit_id_set
+                    and compose_class_id not in java_class.aggregate_id_set
                     and compose_class_id not in java_class.realize_id_set
                 ):
                     self.dot_code += f'x{dot_id_map[java_class.id]} -> x{dot_id_map[compose_class_id]} [label = "composition"];\n'
             for depend_class_id in java_class.depend_id_set:
                 if (
-                    depend_class_id not in java_class.compose_id_set
+                    depend_class_id not in java_class.inherit_id_set
+                    and depend_class_id not in java_class.compose_id_set
                     and depend_class_id not in java_class.aggregate_id_set
                     and depend_class_id not in java_class.realize_id_set
                 ):

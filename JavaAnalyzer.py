@@ -250,6 +250,17 @@ class JavaAnalyzer:
                     class_state = ClassState.REALIZATION
                     debug_analyze_child()
 
+                case "superclass":
+                    first_child = node.named_children[0]
+                    match first_child.type:
+                        case "type_identifier":
+                            current_class.inherit_name_set.add(
+                                first_child.text.decode()
+                            )
+                        case "_":
+                            raise Exception("unhandled case in superclass!")
+                    print_child_type_text()
+
                 case "type_list":
                     debug_analyze_child()
 
@@ -381,8 +392,10 @@ class JavaAnalyzer:
 
 # test code
 if __name__ == "__main__":
-    name_content_list = load_java_files("course-02242-examples")
+    # name_content_list = load_java_files("course-02242-examples")
     # name_content_list = load_java_files("example-dependency-graphs")
+    # name_content_list = load_java_files("test")
+    name_content_list = load_java_files("example-project")
     java_analyzer_list: list[JavaAnalyzer] = []
     for name, content in name_content_list:
         java_analyzer_list.append(JavaAnalyzer(name, content))
@@ -397,7 +410,6 @@ if __name__ == "__main__":
                 continue
             else:
                 i.check_dependency(j)
-
 
     painter = Painter()
     print("---------")
