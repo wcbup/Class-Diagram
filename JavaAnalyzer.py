@@ -154,6 +154,9 @@ class JavaAnalyzer:
                         current_class.depend_name_set.add(class_name)
 
             match node.type:
+                case "program":
+                    debug_analyze_child()
+
                 case "package_declaration":
                     debug_analyze_child()
 
@@ -332,9 +335,10 @@ class JavaAnalyzer:
                 case "argument_list":
                     print_debug_info(node.text)
 
-        for node in self.root_node.named_children:
-            print(node.type)
-            analyze_node(node, 0, None, ClassState.DEPENDENCY, set())
+        # for node in self.root_node.named_children:
+        #     print(node.type)
+        #     analyze_node(node, 0, None, ClassState.DEPENDENCY, set())
+        analyze_node(self.root_node, 0, None, ClassState.DEPENDENCY, set())
 
         print()
         print("id:", self.id)
